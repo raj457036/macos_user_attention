@@ -10,9 +10,21 @@ class MethodChannelMacosUserAttention extends MacosUserAttentionPlatform {
   final methodChannel = const MethodChannel('macos_user_attention');
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version =
-        await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
+  Future<int> requestUserAttention(RequestUserAttentionType type) async {
+    final reqType = type == RequestUserAttentionType.critical
+        ? 'critical'
+        : 'informational';
+    final result = await methodChannel.invokeMethod('requestUserAttention', {
+      'attentionType': reqType,
+    });
+
+    return result as int;
+  }
+
+  @override
+  Future<bool> cancelAttentionRequest(int requestId) {
+    return methodChannel.invokeMethod('cancelAttentionRequest', {
+      'requestId': requestId,
+    }) as Future<bool>;
   }
 }

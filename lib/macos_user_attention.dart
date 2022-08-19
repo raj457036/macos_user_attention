@@ -7,8 +7,18 @@
 
 import 'macos_user_attention_platform_interface.dart';
 
+export 'macos_user_attention_platform_interface.dart'
+    show RequestUserAttentionType;
+
 class MacosUserAttention {
-  Future<String?> getPlatformVersion() {
-    return MacosUserAttentionPlatform.instance.getPlatformVersion();
+  /// Cancel a previous user attention request.
+  Future<bool> cancelAttentionRequest(int requestId) {
+    return MacosUserAttentionPlatform.instance
+        .cancelAttentionRequest(requestId);
+  }
+
+  /// Starts a user attention request.
+  Future<int> requestUserAttention(RequestUserAttentionType type) {
+    return MacosUserAttentionPlatform.instance.requestUserAttention(type);
   }
 }

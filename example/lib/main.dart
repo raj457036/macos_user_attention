@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:macos_user_attention/macos_user_attention.dart';
 
@@ -16,48 +17,78 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  int? lastRequestId;
   final _macosUserAttentionPlugin = MacosUserAttention();
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    requestCriticalAttention();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
+  Future<void> requestCriticalAttention() async {
+    // delaying because requesting attention in foreground doesn't make any
+    // sense.
+    await Future.delayed(const Duration(seconds: 3));
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion =
-          await _macosUserAttentionPlugin.getPlatformVersion() ?? 'Unknown platform version';
+      lastRequestId = await _macosUserAttentionPlugin.requestUserAttention(
+        RequestUserAttentionType.critical,
+      );
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      log("Something went wrong");
     }
+  }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+  Future<void> requestInformationalAttention() async {
+    // delaying because requesting attention in foreground doesn't make any
+    // sense.
+    await Future.delayed(const Duration(seconds: 3));
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    // We also handle the message potentially returning null.
+    try {
+      lastRequestId = await _macosUserAttentionPlugin.requestUserAttention(
+        RequestUserAttentionType.informational,
+      );
+    } on PlatformException {
+      log("Something went wrong");
+    }
+  }
 
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+  Future<void> cancelLastRequest() async {
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    // We also handle the message potentially returning null.
+    if (lastRequestId == null) {
+      log("No request to cancel");
+      return;
+    }
+    try {
+      await _macosUserAttentionPlugin.cancelAttentionRequest(lastRequestId!);
+    } on PlatformException {
+      log("Something went wrong");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
+          appBar: AppBar(
+            title: const Text('Plugin example app'),
+          ),
+          body: Column(
+            children: [
+              ElevatedButton(
+                onPressed: requestCriticalAttention,
+                child: const Text("Request critical attention"),
+              ),
+              ElevatedButton(
+                onPressed: requestInformationalAttention,
+                child: const Text("Request informational attention"),
+              ),
+            ],
+          )),
     );
   }
 }

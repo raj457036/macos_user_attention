@@ -1,7 +1,8 @@
 name: macos_user_attention
-description: A new Flutter plugin project.
+description: A Flutter Plugin for MacOS User Attention API
 version: 0.0.1
-homepage:
+homepage: https://github.com/raj457036/macos_user_attention
+repository: https://github.com/raj457036/macos_user_attention
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
