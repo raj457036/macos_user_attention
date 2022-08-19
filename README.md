@@ -53,3 +53,6 @@ await _plugin.cancelAttentionRequest(requestId);
 
 ```
 
+
+# NOTE: 
+- **You can only request user attention if your app is not in focus.**
