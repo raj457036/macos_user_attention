@@ -2,7 +2,7 @@
 
 A Flutter Plugin for MacOS User Attention API
 
-<img src="./preview.png" height="200">
+<img src="https://raw.githubusercontent.com/raj457036/macos_user_attention/main/preview.png" height="200">
 
 ## Getting Started
 
